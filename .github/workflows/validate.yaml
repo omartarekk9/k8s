@@ -22,9 +22,11 @@ jobs:
 
       - name: Install Trivy
         run: |
-          if ! command -v trivy &> /dev/null; then
-            curl -sfL https://raw.githubusercontent.com/aquasecurity/trivy/main/contrib/install.sh | sh -s -- -b /usr/local/bin
+          mkdir -p $HOME/bin
+          if ! command -v trivy &> /dev/null && [ ! -f "$HOME/bin/trivy" ]; then
+            curl -sfL https://raw.githubusercontent.com/aquasecurity/trivy/main/contrib/install.sh | sh -s -- -b $HOME/bin
           fi
+          echo "$HOME/bin" >> $GITHUB_PATH
 
       - name: Scan nginx image for vulnerabilities
         run: |
