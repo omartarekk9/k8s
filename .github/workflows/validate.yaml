@@ -30,7 +30,7 @@ jobs:
 
       - name: Scan nginx image for vulnerabilities
         run: |
-          trivy image --severity HIGH,CRITICAL --exit-code 0 nginx:latest
+          trivy image --severity HIGH,CRITICAL --exit-code 0 --timeout 10m nginx:latest
 
       - name: Deploy to Kubernetes
         if: github.event_name == 'push'
