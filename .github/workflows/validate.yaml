@@ -1,0 +1,21 @@
+name: Validate Kubernetes Manifests
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  validate:
+    runs-on: self-hosted
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Validate YAML syntax
+        run: |
+          for file in k8s-manifests/*.yaml; do
+            echo "Validating $file"
+            kubectl apply --dry-run=client -f "$file"
+          done
