@@ -1,4 +1,4 @@
-name: Validate Kubernetes Manifests
+name: Validate and Deploy Kubernetes Manifests
 
 on:
   push:
@@ -7,7 +7,7 @@ on:
     branches: [ main ]
 
 jobs:
-  validate:
+  validate-and-deploy:
     runs-on: self-hosted
     steps:
       - name: Checkout code
@@ -19,3 +19,17 @@ jobs:
             echo "Validating $file"
             kubectl apply --dry-run=client -f "$file"
           done
+
+      - name: Deploy to Kubernetes
+        if: github.event_name == 'push'
+        run: |
+          kubectl apply -f k8s-manifests/nginx-configmap.yaml
+          kubectl apply -f k8s-manifests/nginx-deployment.yaml
+          kubectl apply -f k8s-manifests/nginx-service.yaml
+          kubectl apply -f k8s-manifests/nginx-ingress.yaml
+
+      - name: Verify deployment
+        if: github.event_name == 'push'
+        run: |
+          kubectl rollout status deployment/nginx-test -n dev --timeout=60s
+          kubectl get pods -n dev
