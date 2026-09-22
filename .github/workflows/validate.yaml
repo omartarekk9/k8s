@@ -1,4 +1,4 @@
-name: Validate and Deploy Kubernetes Manifests
+name: Validate, Scan and Deploy Kubernetes Manifests
 
 on:
   push:
@@ -7,7 +7,7 @@ on:
     branches: [ main ]
 
 jobs:
-  validate-and-deploy:
+  validate-scan-deploy:
     runs-on: self-hosted
     steps:
       - name: Checkout code
@@ -19,6 +19,16 @@ jobs:
             echo "Validating $file"
             kubectl apply --dry-run=client -f "$file"
           done
+
+      - name: Install Trivy
+        run: |
+          if ! command -v trivy &> /dev/null; then
+            curl -sfL https://raw.githubusercontent.com/aquasecurity/trivy/main/contrib/install.sh | sh -s -- -b /usr/local/bin
+          fi
+
+      - name: Scan nginx image for vulnerabilities
+        run: |
+          trivy image --severity HIGH,CRITICAL --exit-code 0 nginx:latest
 
       - name: Deploy to Kubernetes
         if: github.event_name == 'push'
