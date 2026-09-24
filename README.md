@@ -12,3 +12,4 @@ A hands-on DevOps lab built with:
 
 ## CI/CD Status
 Self-hosted runner configured and active.
+Testing auto_push script
