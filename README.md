@@ -14,3 +14,4 @@ A hands-on DevOps lab built with:
 Self-hosted runner configured and active.
 Testing auto_push script
 Another test line
+Verify credential caching
